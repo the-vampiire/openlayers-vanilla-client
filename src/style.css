@@ -1,0 +1,45 @@
+:root {
+  --table-border: 1px solid black;
+}
+
+body {
+  width: 80%;
+  margin: auto;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+table {
+  width: 100%;
+  text-align: center;
+}
+
+tr {
+  border: var(--table-border);
+  padding: 5px;
+}
+
+td,
+th {
+  border: var(--table-border);
+}
+
+.text-center {
+  text-align: center;
+}
+
+.grid {
+  display: grid;
+  height: 500px;
+  grid-column-gap: 50px;
+  grid-template-columns: 2fr 1fr;
+  grid-template-areas: "map sidebar";
+}
+
+#map {
+  grid-area: map;
+}
+
+#reports {
+  grid-area: sidebar;
+}
