@@ -1,6 +1,7 @@
-import renderReportsContent, {
+import {
+  renderFeatureReports,
   emptyReportsContainer,
-} from "./render-reports-content/index.js";
+} from "./feature-reports/index.js";
 
 /**
  * Map click handler
@@ -11,6 +12,6 @@ export const displayFeatureReports = mapClickEvent => {
 
   if (map.hasFeatureAtPixel(pixel)) {
     emptyReportsContainer();
-    map.forEachFeatureAtPixel(pixel, renderReportsContent);
+    map.forEachFeatureAtPixel(pixel, renderFeatureReports);
   }
 };

@@ -33,16 +33,3 @@ export const createGeoJSONReportsLayer = ({
     style,
     format: new ol.format.GeoJSON(),
   });
-
-/**
- *
- * @param {ol.Map} map
- */
-export const displayReports = map => feature => {
-  const reportOverlay = createReportsOverlay(feature);
-  map.addOverlay(reportOverlay);
-};
-
-export const createReportsOverlay = feature => {
-  const overlay = new ol.Overlay({ ele });
-};
