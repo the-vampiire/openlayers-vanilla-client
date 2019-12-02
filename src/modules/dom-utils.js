@@ -1,20 +1,26 @@
 export { createElement, createNodeListFromHTML };
 
 /**
+ * @typedef SupportedChildTypes
+ * @type {string | number | CreateElementConfig | HTMLElement | Text | NodeList}
+ */
+
+/**
  * @typedef CreateElementConfig - configuration for a new HTML element
  * @property {!string} [tag="div"] a valid HTML tag name
  * @property {!string | !string[]} [classes=[]] classes to apply to the element
  * - a single space separated string or array of individual class strings
  * @property {{ ...attribute: string }} [attributes={}] attributes to apply to the element
  * - in { attribute: value, ... } format
- * @property {string | !Array.<string | CreateElementConfig | HTMLElement | Text | NodeList>} [children=[]] appended to the new element
+ * @property {SupportedChildTypes | SupportedChildTypes[]} [children=[]] appended to the new element
  *
- * can be a single plain text or HTML string or an array with any mixture of:
- * - HTML strings
- * - plain text strings
- * - DOM element objects
- * - NodeList of DOM element objects
- * - element configuration objects
+ * can be a single child or an array of type(s):
+ * - number
+ * - HTML string
+ * - plain text string
+ * - NodeList of DOM Nodes
+ * - element configuration object
+ * - DOM Node (HTMLElement or Text)
  */
 
 /**
@@ -78,9 +84,6 @@ export { createElement, createNodeListFromHTML };
  * <body>
  *  <p>test</p>
     <p>test</p>
-    <p>test</p>
-    <p>test</p>
-    <p>test</p>
 *   <table id="table-id">
       <thead>
         <tr>
@@ -123,9 +126,6 @@ export { createElement, createNodeListFromHTML };
         <p>Section content...</p>
         <p>test</p>
         <p>test</p>
-        <p>test</p>
-        <p>test</p>
-        <p>test</p>
       </section>
     </div>
   </body>
@@ -133,9 +133,9 @@ export { createElement, createNodeListFromHTML };
  */
 const createElement = config => {
   const { tag = "div", classes = [], children = [], attributes = {} } = config;
-
   const element = document.createElement(tag);
 
+  if (typeof config === "number") console.log({ config, element });
   element.classList.add(
     ...(Array.isArray(classes) ? classes : classes.split(" ")),
   );
@@ -144,22 +144,28 @@ const createElement = config => {
     element.setAttribute(attribute, value);
   }
 
+  return appendToElement(element, children);
+};
+
+const appendToElement = (element, children) => {
   if (Array.isArray(children)) {
     // children is a mixed Array
     // loop to convert and append all children
     for (const child of children) {
-      const childList = convertChildToSpreadableList(child);
-      element.append(...childList);
+      appendToElement(element, child);
     }
 
     return element;
   }
 
-  // otherwise children is a single child
-  // a string (plain / HTML) or DOM Node (HTMLElement, Text)
-  const childList = convertChildToSpreadableList(children);
-  element.append(...childList);
+  // otherwise children is a:
+  // number, string (plain / HTML), DOM Node (HTMLElement, Text) or NodeList
+  const childList =
+    children instanceof NodeList
+      ? children // already a spreadable list
+      : convertChildrenToSpreadableList(children);
 
+  element.append(...childList);
   return element;
 };
 
@@ -186,7 +192,7 @@ const createElement = config => {
  */
 const createNodeListFromHTML = rawHTMLString => {
   // remove newlines, tabs and spaces (2+) from multi-line / indented template strings
-  const cleanedHTML = rawHTMLString.replace(/\n|\t|\s{2,}/g, "");
+  const cleanedHTML = String(rawHTMLString).replace(/\n|\t|\s{2,}/g, "");
 
   const template = document.createElement("template");
   template.innerHTML = cleanedHTML;
@@ -194,25 +200,13 @@ const createNodeListFromHTML = rawHTMLString => {
   return template.content.childNodes;
 };
 
-const isDOMNode = object =>
-  [HTMLElement, Text].some(domNodeType => object instanceof domNodeType);
-
-const convertChildToSpreadableList = child => {
-  if (typeof child === "string") {
-    return /<([a-z0-9]+?)>/.test(child) // test for HTML tag presence
-      ? createNodeListFromHTML(child) // NodeList ready for spreading
-      : [child]; // plain text (in array for spreading)
+const convertChildrenToSpreadableList = child => {
+  // test for HTML string
+  if (typeof child === "string" && /<([a-z0-9]+?)>/.test(child)) {
+    return createNodeListFromHTML(child); // NodeList ready for spreading
   }
 
-  if (isDOMNode(child)) {
-    // child is a single HTMLElement or Text node
-    return [child]; // (in array for spreading)
-  }
-
-  if (child instanceof NodeList) {
-    // child is a NodeList ready for spreading
-    return child;
-  }
-
-  return [createElement(child)]; // create from config (in array for spreading)
+  // config object, DOM Node, plain text string or number
+  // only the config object needs special handling
+  return [child.tag ? createElement(child) : child]; // in array for spreading
 };
