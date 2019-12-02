@@ -49,7 +49,7 @@ const createReportColumns = reportData => {
         [REPORT_COLUMN_ATTRIBUTE]: dataProperty,
       },
       // ensure only strings are sent to createElement
-      children: `${dataValue}`, // some data values are numeric
+      children: dataValue, // some data values are numeric
     };
 
     return createElement(config);
