@@ -1,0 +1,48 @@
+:root {
+  --table-border: 1px solid black;
+}
+
+body {
+  width: 80%;
+  margin: auto;
+  box-sizing: border-box;
+}
+
+h1,
+h2 {
+  text-align: center;
+}
+
+table {
+  width: 100%;
+  text-align: center;
+}
+
+tr {
+  border: var(--table-border);
+  padding: 5px;
+}
+
+td,
+th {
+  border: var(--table-border);
+}
+
+.text-center {
+  text-align: center;
+}
+
+.grid {
+  display: grid;
+  grid-column-gap: 50px;
+  grid-template-columns: 2fr 1fr;
+  grid-template-areas: "map reports-container";
+}
+
+#map {
+  grid-area: map;
+}
+
+#reports-container {
+  grid-area: reports-container;
+}
