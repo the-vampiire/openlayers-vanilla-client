@@ -17,6 +17,7 @@ export const createZikaMap = ({
     view: new ol.View({
       zoom,
       center,
+      projection: "EPSG:4326",
     }),
     layers,
   });
