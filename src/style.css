@@ -35,14 +35,32 @@ th {
 .grid {
   display: grid;
   grid-column-gap: 50px;
-  grid-template-columns: 2fr 1fr;
-  grid-template-areas: "map reports-container";
+  grid-template-columns: 20% 80%;
+  grid-template-areas: "location-toggles map-container";
+}
+
+#map-container {
+  display: grid;
+  grid-area: map-container;
+  grid-template-areas: "map" "search-tools";
 }
 
 #map {
   grid-area: map;
 }
 
-#reports-container {
-  grid-area: reports-container;
+#location-toggles {
+  max-height: 400px;
+  grid-area: location-toggles;
+  display: flex;
+  flex-wrap: wrap;
+  overflow: scroll;
+}
+
+#search-tools {
+  margin: 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  grid-area: search-tools;
 }
