@@ -1,7 +1,10 @@
 import env from "./env.js";
 import createSearchBox from "./dom/search-box.js";
 import createDateSelect from "./dom/date-select.js";
+import createDateRangeSearch from "./dom/date-range.js";
 import {
+  getDatesList,
+  getSearchTerms,
   endpointBuilder,
   buildReportsByDateEndpoint,
   buildReportsBySearchEndpoint,
@@ -13,8 +16,8 @@ import {
 import {
   updateFeaturesBySearch,
   updateFeaturesByDateChange,
+  updateFeaturesByDateRangeSearch,
 } from "./ol-zika/map-updaters.js";
-import { getFeatures } from "./ol-zika/geoserver.js";
 
 const buildEndpoint = endpointBuilder(env.API_ORIGIN);
 const reportsByDateEndpoint = buildReportsByDateEndpoint(buildEndpoint);
@@ -26,26 +29,31 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   map.addLayer(reportsLayer);
 
-  await createDateSelect({
-    buildEndpoint,
-    handleDateChange: updateFeaturesByDateChange(
-      reportsLayer,
+  const dates = await getDatesList(buildEndpoint);
+  const searchTerms = await getSearchTerms(buildEndpoint);
+
+  const dateRangeSearch = createDateRangeSearch({
+    dates,
+    handleSearch: updateFeaturesByDateRangeSearch({ map, layer: reportsLayer }),
+  });
+
+  const dateSelect = createDateSelect({
+    dates,
+    handleDateChange: updateFeaturesByDateChange({
+      layer: reportsLayer,
       reportsByDateEndpoint,
-    ),
+    }),
   });
 
-  await createSearchBox({
-    buildEndpoint,
-    handleSearch: updateFeaturesBySearch(reportsLayer, reportsBySearchEndpoint),
+  const searchBox = createSearchBox({
+    searchTerms,
+    handleSearch: updateFeaturesBySearch({
+      layer: reportsLayer,
+      reportsBySearchEndpoint,
+    }),
   });
 
-  getFeatures().then(features => {
-    const source = new ol.source.Vector({
-      features,
-      format: new ol.format.GeoJSON(),
-    });
-
-    reportsLayer.setSource(source);
-    map.getView().fit(source.getExtent());
-  });
+  document
+    .querySelector("#search-tools")
+    .append(dateSelect, searchBox, dateRangeSearch);
 });
