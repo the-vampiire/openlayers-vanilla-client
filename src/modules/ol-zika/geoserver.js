@@ -1,8 +1,8 @@
 import env from "../env.js";
 const { WFS, GeoJSON, filter } = ol.format;
 
-const writeGetFeatureBody = (dateRange = {}) => {
-  const { startDate = "2015-11-28", endDate = "2015-12-05" } = dateRange;
+const writeGetFeatureBody = dateRange => {
+  const { startDate, endDate } = dateRange;
 
   const startDateFilter = new filter.IsBetween(
     "report_date",
@@ -11,8 +11,7 @@ const writeGetFeatureBody = (dateRange = {}) => {
   );
 
   return new WFS().writeGetFeature({
-    maxFeatures: 200,
-    srsName: "EPSG:4326",
+    srsName: "EPSG:3857",
     featurePrefix: "zika",
     outputFormat: "application/json",
     featureTypes: ["locations_with_cases_by_date"],
@@ -21,7 +20,7 @@ const writeGetFeatureBody = (dateRange = {}) => {
   });
 };
 
-export const getFeatures = dateRange =>
+export const getGeoserverFeatures = dateRange =>
   fetch(`${env.GEOSERVER_ORIGIN}/geoserver/wfs`, {
     method: "POST",
     body: new XMLSerializer().serializeToString(writeGetFeatureBody(dateRange)),
