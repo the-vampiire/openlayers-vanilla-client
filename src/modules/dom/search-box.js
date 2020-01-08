@@ -1,20 +1,16 @@
 import { createElement } from "./utils.js";
-import { getSearchTerms } from "../api-utils.js";
 
 const createSearchTermOption = searchTerm =>
   `<option value="${searchTerm}">${searchTerm}</option>`;
 
-const createSearchTermSelect = async buildEndpoint => {
-  const searchTerms = await getSearchTerms(buildEndpoint);
-
-  return createElement({
+const createSearchTermSelect = searchTerms =>
+  createElement({
     tag: "select",
     id: "search-term-select",
     children: searchTerms.map(createSearchTermOption),
   });
-};
 
-const createSearchBox = () =>
+const createSearchInput = () =>
   createElement({
     tag: "input",
     id: "search-value-input",
@@ -38,22 +34,18 @@ const createSearchButton = handleSearch =>
     },
   });
 
-const createSearchBar = async config => {
-  const { handleSearch, buildEndpoint } = config;
+const createSearchBox = config => {
+  const { searchTerms, handleSearch } = config;
 
   return createElement({
     tag: "div",
     id: "search-bar",
     children: [
-      await createSearchTermSelect(buildEndpoint),
-      createSearchBox(),
+      createSearchTermSelect(searchTerms),
+      createSearchInput(),
       createSearchButton(handleSearch),
     ],
   });
 };
 
-export default async config => {
-  const searchBar = await createSearchBar(config);
-
-  document.querySelector("#search-tools").append(searchBar);
-};
+export default createSearchBox;
