@@ -1,5 +1,4 @@
 import { createElement } from "./utils.js";
-import { getDatesList } from "../api-utils.js";
 
 const createDateOption = date =>
   createElement({
@@ -10,16 +9,11 @@ const createDateOption = date =>
     children: date,
   });
 
-const createDateSelect = async config => {
-  const { buildEndpoint, handleDateChange } = config;
-
-  const dates = await getDatesList(buildEndpoint);
+const createDateSelect = config => {
+  const { dates, handleDateChange } = config;
 
   return createElement({
     tag: "select",
-    attributes: {
-      id: "date-select",
-    },
     events: {
       change: handleDateChange,
     },
@@ -29,8 +23,4 @@ const createDateSelect = async config => {
   });
 };
 
-export default async config => {
-  const dateSelect = await createDateSelect(config);
-
-  document.querySelector("#search-tools").appendChild(dateSelect);
-};
+export default createDateSelect;
