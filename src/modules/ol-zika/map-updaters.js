@@ -1,41 +1,39 @@
-import createLocationToggles from "../dom/location-toggles.js";
+import { getGeoserverFeatures } from "./geoserver.js";
+import {
+  createVectorSourceFromURL,
+  createVectorSourceFromFeatures,
+} from "./map-utils.js";
 
-const createVectorSource = url => {
-  const reportsSource = new ol.source.Vector({
-    url,
-    format: new ol.format.GeoJSON(),
-  });
-
-  reportsSource.once("change", () => {
-    if (reportsSource.getState() === "ready") {
-      createLocationToggles(reportsSource.getFeatures());
-    }
-  });
-
-  return reportsSource;
-};
-
-export const updateFeaturesByDateChange = (
-  reportsLayer,
-  reportsByDateEndpoint,
-) => event => {
+export const updateFeaturesByDateChange = config => event => {
+  const { layer, reportsByDateEndpoint } = config;
   const reportsDate = event.target.value;
 
-  reportsLayer.setSource(
-    createVectorSource(reportsByDateEndpoint(reportsDate)),
-  );
+  const source = createVectorSourceFromURL({
+    url: reportsByDateEndpoint(reportsDate),
+  });
+
+  layer.setSource(source);
 };
 
-/**
- *
- * @param {ol.layer.Vector} reportsLayer
- * @param {function} buildEndpoint
- */
-export const updateFeaturesBySearch = (
-  reportsLayer,
-  reportsBySearchEndpoint,
-) => async (term, value) => {
-  reportsLayer.setSource(
-    createVectorSource(reportsBySearchEndpoint(term, value)),
-  );
+export const updateFeaturesBySearch = config => (term, value) => {
+  const { layer, reportsBySearchEndpoint } = config;
+
+  const source = createVectorSourceFromURL({
+    url: reportsBySearchEndpoint(term, value),
+  });
+
+  layer.setSource(source);
+};
+
+export const updateFeaturesByDateRangeSearch = config => async (
+  startDate,
+  endDate,
+) => {
+  const { map, layer } = config;
+
+  const features = await getGeoserverFeatures({ startDate, endDate });
+  const source = createVectorSourceFromFeatures({ features });
+
+  layer.setSource(source);
+  map.getView().fit(source.getExtent());
 };
