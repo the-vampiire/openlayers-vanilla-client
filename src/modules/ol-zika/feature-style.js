@@ -1,7 +1,11 @@
+import { getCaseCountFromReports } from "./data-utils.js";
+
 const { Style, Stroke, Fill } = ol.style;
 
 /**
+ * calculate trimmed average of cases
  * https://www.gab.lc/articles/average_ignoring_extremes_outliers/
+ * 
  WITH bounds AS (
     SELECT (AVG(cases) - STDDEV_SAMP(cases) * 2) as lower_bound,
            (AVG(cases) + STDDEV_SAMP(cases) * 2) as upper_bound
@@ -16,16 +20,14 @@ const { Style, Stroke, Fill } = ol.style;
  */
 
 const AVERAGE_CASES_COUNT = 256;
-
-const getCaseCountFromReports = reports =>
-  reports.reduce((cases, report) => cases + report.value, 0);
+const STANDARD_DEVIATION = 1922;
 
 const getFillColorByCaseCount = caseCount => {
-  const normalized = caseCount / AVERAGE_CASES_COUNT;
+  const standardized = (caseCount - AVERAGE_CASES_COUNT) / STANDARD_DEVIATION;
 
-  if (normalized >= 1) return [255, 0, 0, 1]; // full red
-  if (normalized >= 0.5) return [255, 140, 0, 1]; // orange
-  if (normalized > 0) return [255, 255, 0, 1]; // yellow
+  if (standardized >= 1) return [255, 0, 0, 1]; // full red
+  if (standardized >= 0) return [255, 140, 0, 1]; // orange
+  if (standardized > -0.13) return [255, 255, 0, 1]; // yellow
   return [169, 169, 169, 0.3]; // translucent grey
 };
 
