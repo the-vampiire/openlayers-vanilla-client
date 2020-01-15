@@ -23,11 +23,19 @@ const buildEndpoint = endpointBuilder(env.API_ORIGIN);
 const reportsByDateEndpoint = buildReportsByDateEndpoint(buildEndpoint);
 const reportsBySearchEndpoint = buildReportsBySearchEndpoint(buildEndpoint);
 
+import createWMSLayers from "./ol-zika/wms-layers.js";
+
 document.addEventListener("DOMContentLoaded", async () => {
   const map = createZikaMap();
+
+  const wmsLayers = createWMSLayers(map);
   const reportsLayer = createGeoJSONReportsLayer({});
 
   map.addLayer(reportsLayer);
+  wmsLayers.forEach(layerConfig => map.addLayer(layerConfig.layer));
+
+  // TODO: pass wmsLayers to a toggle tool for showing / hiding
+  // limit one layer visible at a time due to lag
 
   const dates = await getDatesList(buildEndpoint);
   const searchTerms = await getSearchTerms(buildEndpoint);
