@@ -1,6 +1,13 @@
 import calculatedFeatureStyle from "./feature-style.js";
 import createLocationToggles from "../dom/location-toggles.js";
 
+/**
+ * Creates a function that toggles the visibility of a layer
+ * @param {ol.layer.Image} layer
+ */
+export const createLayerVisibilityToggle = layer => () =>
+  layer.setVisible(!layer.getVisible());
+
 export const createVectorSourceFromURL = config => {
   const { url } = config;
 
@@ -46,24 +53,20 @@ export const createZikaMap = ({
     view: new ol.View({
       zoom,
       center,
-      // projection: "EPSG:4326",
       projection: "EPSG:3857",
     }),
     layers,
   });
 
-export const createGeoJSONReportsLayer = ({
-  url,
-  style = calculatedFeatureStyle,
-}) =>
-  new ol.layer.Vector({
-    style,
-    source: new ol.source.Vector({ url, format: new ol.format.GeoJSON() }),
+export const createZikaReportsLayer = () => {
+  const layer = new ol.layer.Vector({
+    zIndex: 10, // keep as top layer at all times
+    style: calculatedFeatureStyle,
   });
 
-/**
- * Creates a function that toggles the visibility of a layer
- * @param {ol.layer.Image} layer
- */
-export const createLayerToggle = layer => () =>
-  layer.setVisible(!layer.getVisible());
+  return {
+    layer,
+    name: "Zika Reports [2015-18]",
+    toggleVisibility: createLayerVisibilityToggle(layer),
+  };
+};
