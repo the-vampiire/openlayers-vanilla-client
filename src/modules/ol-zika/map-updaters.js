@@ -1,3 +1,4 @@
+import { loadRequest } from "../dom/loader.js";
 import { getGeoserverFeatures } from "./geoserver.js";
 import {
   createVectorSourceFromURL,
@@ -31,7 +32,12 @@ export const updateFeaturesByDateRangeSearch = config => async (
 ) => {
   const { map, layer } = config;
 
-  const features = await getGeoserverFeatures({ startDate, endDate });
+  // shows / removes loader modal while issuing request
+  const features = await loadRequest(getGeoserverFeatures, {
+    startDate,
+    endDate,
+  });
+
   const source = createVectorSourceFromFeatures({ features });
 
   layer.setSource(source);
