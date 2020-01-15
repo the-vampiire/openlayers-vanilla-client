@@ -21,10 +21,16 @@ export const createVectorSourceFromURL = config => {
 export const createVectorSourceFromFeatures = config => {
   const { features } = config;
 
-  return new ol.source.Vector({
+  const vectorSource = new ol.source.Vector({
     features,
     format: new ol.format.GeoJSON(),
   });
+
+  // TODO: aggregate when many dates are present
+  // currently drawing multiple styles for each date
+  createLocationToggles(vectorSource.getFeatures());
+
+  return vectorSource;
 };
 
 const createBaseLayer = (source = new ol.source.OSM()) =>
