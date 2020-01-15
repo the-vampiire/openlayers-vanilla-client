@@ -8,6 +8,12 @@ body {
   box-sizing: border-box;
 }
 
+#loader {
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
 h1,
 h2 {
   text-align: center;
@@ -36,7 +42,7 @@ th {
   display: grid;
   grid-column-gap: 50px;
   grid-template-columns: 20% 80%;
-  grid-template-areas: "location-toggles map-container";
+  grid-template-areas: "toggles-container map-container";
 }
 
 #map-container {
@@ -49,9 +55,9 @@ th {
   grid-area: map;
 }
 
-#location-toggles {
+#toggles-container {
   max-height: 400px;
-  grid-area: location-toggles;
+  grid-area: toggles-container;
   display: flex;
   flex-wrap: wrap;
   overflow: scroll;
