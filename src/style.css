@@ -3,15 +3,23 @@
 }
 
 body {
-  width: 80%;
+  width: 90%;
   margin: auto;
   box-sizing: border-box;
 }
 
 #loader {
+  top: 0;
+  left: 0;
   width: 100%;
+  z-index: 100;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.2);
+  display: none;
+  position: absolute;
+  background: center
+    url("https://i.pinimg.com/originals/3f/2c/97/3f2c979b214d06e9caab8ba8326864f3.gif")
+    no-repeat;
+  background-color: rgba(255, 255, 255, 0.6);
 }
 
 h1,
@@ -34,6 +42,11 @@ th {
   border: var(--table-border);
 }
 
+.count-info-string {
+  color: red;
+  font-weight: bold;
+}
+
 .text-center {
   text-align: center;
 }
@@ -41,7 +54,7 @@ th {
 .grid {
   display: grid;
   grid-column-gap: 50px;
-  grid-template-columns: 20% 80%;
+  grid-template-columns: 30% 70%;
   grid-template-areas: "toggles-container map-container";
 }
 
