@@ -8,6 +8,7 @@ export { createElement, createNodeListFromHTML };
 /**
  * @typedef CreateElementConfig - configuration for a new HTML element
  * @property {!string} [tag="div"] a valid HTML tag name
+ * @property {!string} [id] the id of the element (shorthand for attributes.id)
  * @property {{ event: function }} [events] event listeners to register on the element
  * - event is a string event name
  * - function is the event handler to attach to the listener
