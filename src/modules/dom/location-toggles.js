@@ -1,5 +1,8 @@
 import { createElement } from "./utils.js";
-import { sortFeaturesByCount } from "../ol-zika/data-utils.js";
+import {
+  sortFeaturesByCount,
+  getCaseCountFromReports,
+} from "../ol-zika/data-utils.js";
 import calculatedFeatureStyle, {
   invisibleFeatureStyle,
 } from "../ol-zika/feature-style.js";
@@ -25,7 +28,8 @@ const buildLocationTitle = locationFeature => {
 const buildCountInfoString = locationFeature => {
   const { cases, reports } = locationFeature.getProperties();
 
-  const infoString = reports ? `${reports.length} reports` : `${cases} cases`;
+  const caseCount = reports ? getCaseCountFromReports(reports) : cases;
+  const infoString = `${caseCount} cases`;
 
   return `<span class="count-info-string">${infoString}</span>`;
 };
@@ -104,15 +108,26 @@ const createCountryLocationToggles = locationFeatures =>
         convertToCountryToggles(countryGroups);
   }, {});
 
+const resetLocationToggles = locationTogglesId => {
+  const locationTogglesElement = document.querySelector(
+    `#${locationTogglesId}`,
+  );
+
+  // remove if it exists
+  locationTogglesElement && locationTogglesElement.remove();
+};
+
 export default locationFeatures => {
+  const id = "location-toggles";
   const countryLocationToggles = createCountryLocationToggles(locationFeatures);
 
   const locationToggles = createElement({
+    id,
     tag: "div",
-    id: "location-toggles",
     children: ["<h2>Toggle Locations</h2>", ...countryLocationToggles],
   });
 
-  TOGGLES_CONTAINER.innerHTML = "";
+  resetLocationToggles(id);
+
   TOGGLES_CONTAINER.appendChild(locationToggles);
 };
