@@ -2,6 +2,8 @@ import env from "./env.js";
 import createSearchBox from "./dom/search-box.js";
 import createDateSelect from "./dom/date-select.js";
 import createDateRangeSearch from "./dom/date-range.js";
+import createLayerToggles from "./dom/layer-toggles.js";
+import createWMSLayers from "./ol-zika/wms-layers.js";
 import {
   getDatesList,
   getSearchTerms,
@@ -9,10 +11,7 @@ import {
   buildReportsByDateEndpoint,
   buildReportsBySearchEndpoint,
 } from "./api-utils.js";
-import {
-  createZikaMap,
-  createGeoJSONReportsLayer,
-} from "./ol-zika/map-utils.js";
+import { createZikaMap, createZikaReportsLayer } from "./ol-zika/map-utils.js";
 import {
   updateFeaturesBySearch,
   updateFeaturesByDateChange,
@@ -23,41 +22,44 @@ const buildEndpoint = endpointBuilder(env.API_ORIGIN);
 const reportsByDateEndpoint = buildReportsByDateEndpoint(buildEndpoint);
 const reportsBySearchEndpoint = buildReportsBySearchEndpoint(buildEndpoint);
 
-import createWMSLayers from "./ol-zika/wms-layers.js";
-
 document.addEventListener("DOMContentLoaded", async () => {
-  const map = createZikaMap();
-
-  const wmsLayers = createWMSLayers(map);
-  const reportsLayer = createGeoJSONReportsLayer({});
-
-  map.addLayer(reportsLayer);
-  wmsLayers.forEach(layerConfig => map.addLayer(layerConfig.layer));
-
-  // TODO: pass wmsLayers to a toggle tool for showing / hiding
-  // limit one layer visible at a time due to lag
-
+  // -- API DATA -- //
   const dates = await getDatesList(buildEndpoint);
   const searchTerms = await getSearchTerms(buildEndpoint);
 
+  // -- OPENLAYERS -- //
+  const map = createZikaMap();
+
+  const wmsLayerConfigs = createWMSLayers(map);
+  const reportsLayerConfig = createZikaReportsLayer({});
+  const layerConfigs = [reportsLayerConfig, ...wmsLayerConfigs];
+
+  layerConfigs.forEach(layerConfig => map.addLayer(layerConfig.layer));
+
+  // -- DOM -- //
+  createLayerToggles(layerConfigs);
+
   const dateRangeSearch = createDateRangeSearch({
     dates,
-    handleSearch: updateFeaturesByDateRangeSearch({ map, layer: reportsLayer }),
+    handleSearch: updateFeaturesByDateRangeSearch({
+      map,
+      layer: reportsLayerConfig.layer,
+    }),
   });
 
   const dateSelect = createDateSelect({
     dates,
     handleDateChange: updateFeaturesByDateChange({
-      layer: reportsLayer,
       reportsByDateEndpoint,
+      layer: reportsLayerConfig.layer,
     }),
   });
 
   const searchBox = createSearchBox({
     searchTerms,
     handleSearch: updateFeaturesBySearch({
-      layer: reportsLayer,
       reportsBySearchEndpoint,
+      layer: reportsLayerConfig.layer,
     }),
   });
 
