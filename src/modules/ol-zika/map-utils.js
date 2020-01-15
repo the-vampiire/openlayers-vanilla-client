@@ -1,3 +1,4 @@
+import calculatedFeatureStyle from "./feature-style.js";
 import createLocationToggles from "../dom/location-toggles.js";
 
 export const createVectorSourceFromURL = config => {
@@ -8,7 +9,7 @@ export const createVectorSourceFromURL = config => {
     format: new ol.format.GeoJSON(),
   });
 
-  vectorSource.on("change", () => {
+  vectorSource.once("change", () => {
     if (vectorSource.getState() === "ready") {
       createLocationToggles(vectorSource.getFeatures());
     }
@@ -47,9 +48,7 @@ export const createZikaMap = ({
 
 export const createGeoJSONReportsLayer = ({
   url,
-  style = ol.style.Stroke({
-    stroke: "red",
-  }),
+  style = calculatedFeatureStyle,
 }) =>
   new ol.layer.Vector({
     style,
