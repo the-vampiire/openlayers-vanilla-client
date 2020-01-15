@@ -60,3 +60,10 @@ export const createGeoJSONReportsLayer = ({
     style,
     source: new ol.source.Vector({ url, format: new ol.format.GeoJSON() }),
   });
+
+/**
+ * Creates a function that toggles the visibility of a layer
+ * @param {ol.layer.Image} layer
+ */
+export const createLayerToggle = layer => () =>
+  layer.setVisible(!layer.getVisible());
