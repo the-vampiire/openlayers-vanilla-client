@@ -20,15 +20,14 @@ const { Style, Stroke, Fill } = ol.style;
  */
 
 const AVERAGE_CASES_COUNT = 256;
-const STANDARD_DEVIATION = 1922;
 
 const getFillColorByCaseCount = caseCount => {
-  const standardized = (caseCount - AVERAGE_CASES_COUNT) / STANDARD_DEVIATION;
+  const standardized = caseCount / AVERAGE_CASES_COUNT;
 
-  if (standardized >= 1) return [255, 0, 0, 1]; // full red
-  if (standardized >= 0) return [255, 140, 0, 1]; // orange
-  if (standardized > -0.13) return [255, 255, 0, 1]; // yellow
-  return [169, 169, 169, 0.3]; // translucent grey
+  if (standardized >= 1) return [255, 0, 0, 0.7]; // full red
+  if (standardized >= 0.25) return [255, 140, 0, 0.7]; // orange
+  if (standardized > 0.1) return [255, 255, 0, 0.7]; // yellow
+  return [90, 90, 90, 0.3]; // translucent grey
 };
 
 export const invisibleFeatureStyle = () => {
@@ -36,7 +35,7 @@ export const invisibleFeatureStyle = () => {
 
   return new Style({
     fill: new Fill({ color }),
-    stroke: new Stroke({ color }),
+    stroke: new Stroke({ color, width: 2 }),
   });
 };
 
