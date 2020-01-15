@@ -1,6 +1,9 @@
 import { createElement } from "./utils.js";
+import calculatedFeatureStyle, {
+  invisibleFeatureStyle,
+} from "../ol-zika/feature-style.js";
 
-const LOCATION_TOGGLES = document.querySelector("#location-toggles");
+const TOGGLES_CONTAINER = document.querySelector("#toggles-container");
 
 const buildLocationFeatureId = (idPrefix, locationFeature) => {
   const { country, state } = locationFeature.getProperties();
@@ -27,43 +30,42 @@ const createLocationToggle = locationFeature => {
   const id = buildLocationFeatureId("location-toggle", locationFeature);
 
   const locationToggle = createElement({
-    tag: "div",
-    children: [
-      {
-        id,
-        tag: "input",
-        attributes: {
-          checked: true,
-          name: location,
-          type: "checkbox",
-        },
-        events: {
-          change: event => {
-            const { target } = event;
-            const style = new ol.style.Style({
-              stroke: new ol.style.Stroke({
-                color: target.checked ? [255, 0, 0] : [0, 0, 0, 0],
-              }),
-            });
+    id,
+    tag: "input",
+    attributes: {
+      checked: true,
+      name: location,
+      type: "checkbox",
+    },
+    events: {
+      change: event => {
+        const { target } = event;
 
-            locationFeature.setStyle(style);
-          },
-        },
+        const style = target.checked
+          ? calculatedFeatureStyle(locationFeature)
+          : invisibleFeatureStyle();
+
+        locationFeature.setStyle(style);
       },
-      `<label for="${id}">${location}</label>`,
-    ],
+    },
   });
 
-  return locationToggle;
+  return createElement({
+    tag: "div",
+    children: [locationToggle, `<label for=${id}>${location}</label>`],
+  });
 };
 
 export default locationFeatures => {
   const locationToggles = createElement({
     tag: "div",
-    id: "location-toggle-options",
-    children: locationFeatures.map(createLocationToggle),
+    id: "location-toggles",
+    children: [
+      "<h2>Toggle Locations</h2>",
+      ...locationFeatures.map(createLocationToggle),
+    ],
   });
 
-  LOCATION_TOGGLES.innerHTML = "";
-  LOCATION_TOGGLES.appendChild(locationToggles);
+  TOGGLES_CONTAINER.innerHTML = "";
+  TOGGLES_CONTAINER.appendChild(locationToggles);
 };
