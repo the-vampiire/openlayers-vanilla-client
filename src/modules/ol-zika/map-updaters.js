@@ -27,16 +27,17 @@ export const updateFeaturesBySearch = config => (term, value) => {
 };
 
 export const updateFeaturesByDateRangeSearch = config => async (
-  startDate,
-  endDate,
+  dateRange,
+  includeZeroCases,
 ) => {
   const { map, layer } = config;
 
   // shows / removes loader modal while issuing request
-  const features = await loadRequest(getGeoserverFeatures, {
-    startDate,
-    endDate,
-  });
+  const features = await loadRequest(
+    getGeoserverFeatures,
+    dateRange,
+    includeZeroCases,
+  );
 
   const source = createVectorSourceFromFeatures({ features });
 
