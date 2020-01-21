@@ -24,10 +24,11 @@ const AVERAGE_CASES_COUNT = 256;
 const getFillColorByCaseCount = caseCount => {
   const standardized = caseCount / AVERAGE_CASES_COUNT;
 
-  if (standardized >= 1) return [255, 0, 0, 0.7]; // full red
-  if (standardized >= 0.25) return [255, 140, 0, 0.7]; // orange
-  if (standardized > 0.1) return [255, 255, 0, 0.7]; // yellow
-  return [90, 90, 90, 0.3]; // translucent grey
+  if (standardized >= 1) return [255, 0, 0, 0.8]; // full red
+  if (standardized === 0) return [90, 90, 90, 0.3];
+  if (standardized >= 0.25) return [255, 140, 0, 0.8]; // orange
+  if (standardized >= 0.1) return [255, 255, 0, 0.8]; // yellow
+  return [200, 200, 0, 0.2]; // light yellow
 };
 
 export const invisibleFeatureStyle = () => {
