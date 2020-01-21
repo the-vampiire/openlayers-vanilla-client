@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // -- OPENLAYERS -- //
   const map = createZikaMap();
 
-  const wmsLayerConfigs = createWMSLayers(map);
+  const wmsLayerConfigs = createWMSLayers();
   const reportsLayerConfig = createZikaReportsLayer({});
   const layerConfigs = [reportsLayerConfig, ...wmsLayerConfigs];
 

@@ -1,36 +1,32 @@
 import { createLayerVisibilityToggle } from "./map-utils.js";
 
-const wmsLayerCreator = map => (url, LAYERS) =>
+const createWMSLayer = ({ url, layers, projection = "EPSG:3857" }) =>
   new ol.layer.Image({
-    map,
-    opacity: 0.5,
     visible: false,
     source: new ol.source.ImageWMS({
       url,
-      params: { LAYERS },
-      projection: "EPSG:3857",
+      projection,
+      params: { layers },
     }),
   });
 
-export default map => {
-  const createWMSLayer = wmsLayerCreator(map);
-
-  const populationDensity2015Layer = createWMSLayer(
-    "https://sedac.ciesin.columbia.edu/geoserver/wms",
-    [
+export default () => {
+  const populationDensity2015Layer = createWMSLayer({
+    url: "https://sedac.ciesin.columbia.edu/geoserver/wms",
+    layers: [
       "gpw-v4:gpw-v4-population-density-adjusted-to-2015-unwpp-country-totals-rev11_2015",
     ],
-  );
+  });
 
-  const daySurfaceTemp2013Layer = createWMSLayer(
-    "https://sedac.ciesin.columbia.edu/geoserver/wms",
-    ["sdei:sdei-global-summer-lst-2013_day-max-global"],
-  );
+  const daySurfaceTemp2013Layer = createWMSLayer({
+    url: "https://sedac.ciesin.columbia.edu/geoserver/wms",
+    layers: ["sdei:sdei-global-summer-lst-2013_day-max-global"],
+  });
 
-  const freshwaterAvailabilityLayer = createWMSLayer(
-    "https://sedac.ciesin.columbia.edu/geoserver/wms",
-    ["sdei:sdei-trends-freshwater-availability-grace"],
-  );
+  const freshwaterAvailabilityLayer = createWMSLayer({
+    url: "https://sedac.ciesin.columbia.edu/geoserver/wms",
+    layers: ["sdei:sdei-trends-freshwater-availability-grace"],
+  });
 
   return [
     {
