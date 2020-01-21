@@ -4,17 +4,12 @@ export const getCaseCountFromReports = reports =>
 export const sortFeaturesByCount = (firstFeature, secondFeature) => {
   const { cases, reports } = firstFeature.getProperties();
 
-  let firstCount, secondCount;
-  if (reports) {
-    firstCount = reports.length;
-    secondCount = secondFeature.get("reports").length;
-  } else {
-    firstCount = cases;
-    secondCount = secondFeature.get("cases");
-  }
+  const firstCount = reports ? getCaseCountFromReports(reports) : cases;
 
-  if (firstCount === secondCount) return 0;
+  const secondCount = reports
+    ? getCaseCountFromReports(secondFeature.get("reports"))
+    : secondFeature.get("cases");
 
   // descending order
-  return firstCount > secondCount ? -1 : 1;
+  return firstCount === secondCount ? 0 : firstCount > secondCount ? -1 : 1;
 };
