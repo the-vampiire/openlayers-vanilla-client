@@ -1,6 +1,24 @@
 import { createElement } from "./utils.js";
 
-const createDateSelector = (minDate, maxDate) => id =>
+const createZeroCasesOption = () => {
+  const id = "zero-cases-checkbox";
+  const zeroCasesCheckbox = createElement({
+    id,
+    tag: "input",
+    attributes: {
+      type: "checkbox",
+    },
+  });
+
+  return createElement({
+    children: [
+      `<label for=${id}>Include Zero Cases</label>`,
+      zeroCasesCheckbox,
+    ],
+  });
+};
+
+const dateSelectorCreator = (minDate, maxDate) => id =>
   createElement({
     id,
     tag: "input",
@@ -24,10 +42,12 @@ const createSearchButton = handleClick =>
 const handleSearchClick = handleSearch => () => {
   const startDate = document.querySelector("#date-range-start").value;
   const endDate = document.querySelector("#date-range-end").value;
+  const includeZeroCases = document.querySelector("#zero-cases-checkbox")
+    .checked;
 
-  if (!startDate && !endDate) return;
+  if (!startDate || !endDate) return;
 
-  handleSearch(startDate, endDate);
+  handleSearch({ startDate, endDate }, includeZeroCases);
 };
 
 const createDateRangeSearch = config => {
@@ -35,14 +55,14 @@ const createDateRangeSearch = config => {
 
   const [minDate] = dates;
   const maxDate = dates[dates.length - 1];
-
-  const dateSelectorCreator = createDateSelector(minDate, maxDate);
+  const createDateSelector = dateSelectorCreator(minDate, maxDate);
 
   return createElement({
     id: "date-range-search",
     children: [
-      dateSelectorCreator("date-range-start"),
-      dateSelectorCreator("date-range-end"),
+      createZeroCasesOption(),
+      createDateSelector("date-range-start"),
+      createDateSelector("date-range-end"),
       createSearchButton(handleSearchClick(handleSearch)),
     ],
   });
